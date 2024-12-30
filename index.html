@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy New Year</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle, #1e202f, #0d0e16);
+      color: white;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 2em;
+      opacity: 0;
+      animation: fadeInScale 1.5s ease-in-out forwards;
+      animation-delay: 4s;
+      background: linear-gradient(90deg, #ff7eb3, #ff758c, #ff6a6a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    @keyframes fadeInScale {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .falling-element {
+      position: absolute;
+      top: -50px;
+      animation: fall linear infinite;
+      font-size: 10px;
+      color: pink;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div id="message">新年快乐呀， 馨瑶宝贝儿<br>I love u ❤️</div>
+
+  <script>
+    // Fireworks effect
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Firework {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.particles = [];
+        for (let i = 0; i < 50; i++) {
+          this.particles.push(new Particle(x, y));
+        }
+      }
+
+      update() {
+        this.particles.forEach(particle => particle.update());
+      }
+
+      draw() {
+        this.particles.forEach(particle => particle.draw());
+      }
+    }
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 10;
+        this.speedY = (Math.random() - 0.5) * 10;
+        this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        this.life = 100;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.life--;
+      }
+
+      draw() {
+        if (this.life > 0) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        }
+      }
+    }
+
+    const fireworks = [];
+
+    function createFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height / 2;
+      fireworks.push(new Firework(x, y));
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach((firework, index) => {
+        firework.update();
+        firework.draw();
+        if (firework.particles[0].life <= 0) fireworks.splice(index, 1);
+      });
+      requestAnimationFrame(animate);
+    }
+
+    setInterval(createFirework, 500);
+    animate();
+
+    // Falling stars and hearts
+    function createFallingElement() {
+      const element = document.createElement('div');
+      element.classList.add('falling-element');
+      element.style.left = Math.random() * 100 + 'vw';
+      element.style.animationDuration = Math.random() * 3 + 2 + 's';
+      element.innerHTML = Math.random() > 0.5 ? '⭐' : '❤️';
+      document.body.appendChild(element);
+      setTimeout(() => element.remove(), 5000);
+    }
+
+    setInterval(createFallingElement, 300);
+  </script>
+</body>
+</html>
